@@ -23,12 +23,12 @@ class RoboRestartableTest extends \PHPUnit_Framework_TestCase
     {
         $_SERVER['_'] = realpath($_SERVER['_']);
 
-        $this->testInstance = $this->getMock(RoboRestartable::class, [
+        $this->testInstance = $this->getMock('\Dubpub\RoboReset\RoboRestartable', [
             'taskWatch'
         ]);
 
         $this->watchMock = $this->getMock(
-            Watch::class,
+            '\Robo\Task\Base\Watch',
             ['monitor', 'run'],
             [],
             '',
