@@ -1,5 +1,6 @@
 <?php namespace Dubpub\RoboReset;
 
+use Robo\Task\Base\Exec;
 use Robo\Task\Base\Watch;
 
 trait RoboResetTrait
@@ -15,27 +16,54 @@ trait RoboResetTrait
         return $this->roboFilePath;
     }
 
-    protected function resetRobo($message = null)
+    protected function shutDownCallback()
     {
         $_ = $_SERVER['_'];
 
-        $this->_exec('clear');
-
-        if (null !== $message) {
-            $this->say('Restarting. Reason: '.$message);
-        }
-
-        register_shutdown_function(function () use ($_) {
+        return function () use ($_) {
             global $argv;
 
             $argvLocal = $argv;
 
             array_shift($argvLocal);
 
-            pcntl_exec($_, $argvLocal);
-        });
+            // @codeCoverageIgnoreStart
+            if (!defined('UNIT_TESTING')) {
+                pcntl_exec($_, $argvLocal);
+            }
+            // @codeCoverageIgnoreEnd
 
-        die;
+            return;
+        };
+    }
+
+    protected function lintRoboFile()
+    {
+        /**
+         * @var Exec $task
+         */
+        $task = $this->taskExec('php -l ' . $this->getRoboFilePath());
+        $task->printed(false);
+        $result = $task->run();
+        return $result->getExitCode() !== 255;
+    }
+
+    protected function resetRobo($message = null)
+    {
+
+        //$this->_exec('clear');
+
+        if (null !== $message) {
+            $this->say('Restarting. Reason: '.$message);
+        }
+
+        register_shutdown_function($this->shutDownCallback());
+
+        // @codeCoverageIgnoreStart
+        if (!defined('UNIT_TESTING')) {
+            die;
+        }
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -50,13 +78,7 @@ trait RoboResetTrait
         $watch = $this->taskWatch();
 
         $watch->monitor($this->getRoboFilePath(), function () {
-            $fileContents = str_replace(
-                'class RoboFile',
-                'class RoboFile_'.uniqid(),
-                file_get_contents($this->getRoboFilePath())
-            );
-
-            if (eval('?>'.$fileContents) !== false) {
+            if ($this->lintRoboFile()) {
                 $this->resetRobo('RoboFile modified');
             } else {
                 $this->say('RoboFile was modified, but it seems that php code is not valid, ignoring');

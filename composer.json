@@ -2,7 +2,8 @@
   "name": "dubpub/robo-reset",
   "description": "A trait to reset RoboFile.",
   "require-dev": {
-    "codegyre/robo": "*"
+    "codegyre/robo": "*",
+    "satooshi/php-coveralls": "dev-master"
   },
   "autoload": {
     "psr-4": {

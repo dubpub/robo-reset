@@ -15,6 +15,23 @@
             <directory suffix=".php">./tests/</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <const name="UNIT_TESTING" value="true" />
+        <server name="_" value="vendor/bin/robo task"></server>
+    </php>
+    <whitelist processUncoveredFilesFromWhitelist="true">
+        <exclude>
+            <directory suffix=".php">vendor</directory>
+            <directory suffix=".php">tests</directory>
+        </exclude>
+    </whitelist>
+    <filter>
+        <blacklist>
+            <directory suffix=".php">vendor</directory>
+            <directory suffix=".php">tests</directory>
+            <file>RoboFile.php</file>
+        </blacklist>
+    </filter>
     <logging>
         <log type="coverage-html" target="./.doc" charset="UTF-8"
              yui="true" highlight="true"
