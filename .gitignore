@@ -1,0 +1,7 @@
+.idea/
+.doc/
+
+npm-debug.log
+
+composer.lock
+vendor/

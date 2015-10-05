@@ -1,0 +1,12 @@
+{
+  "name": "dubpub/robo-reset",
+  "description": "A trait to reset RoboFile.",
+  "require-dev": {
+    "codegyre/robo": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Dubpub\\RoboReset\\": "src/Dubpub/RoboReset"
+    }
+  }
+}
