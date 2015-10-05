@@ -21,8 +21,6 @@ class RoboRestartableTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $_SERVER['_'] = realpath($_SERVER['_']);
-
         $this->testInstance = $this->getMock('\Dubpub\RoboReset\RoboRestartable', [
             'taskWatch'
         ]);
@@ -40,8 +38,8 @@ class RoboRestartableTest extends \PHPUnit_Framework_TestCase
     {
         $path = realpath(__DIR__.'/../../../RoboFile.php');
 
-        $reflectionRestartWatchMethod = new \ReflectionMethod($this->testInstance, 'restartOnRoboChange');
-        $reflectionRestartWatchMethod->setAccessible(true);
+        $restartWatchMethod = new \ReflectionMethod($this->testInstance, 'restartOnRoboChange');
+        $restartWatchMethod->setAccessible(true);
 
         $this->testInstance
             ->expects($this->any())
@@ -52,7 +50,7 @@ class RoboRestartableTest extends \PHPUnit_Framework_TestCase
             ->expects($this->exactly(2))
             ->method('monitor')
             ->will(
-                $this->returnCallback(function ($passedPath, $closure) use ($path, &$i) {
+                $this->returnCallback(function ($passedPath, $closure) use ($path) {
                     $this->assertSame($path, $passedPath);
 
                     $fileContentsOriginal = file_get_contents($path);
@@ -72,27 +70,27 @@ class RoboRestartableTest extends \PHPUnit_Framework_TestCase
             );
 
 
-        $this->assertSame($this->watchMock, $reflectionRestartWatchMethod->invoke($this->testInstance));
-        $this->assertSame($this->testInstance, $reflectionRestartWatchMethod->invoke($this->testInstance, true));
+        $this->assertSame($this->watchMock, $restartWatchMethod->invoke($this->testInstance));
+        $this->assertSame($this->testInstance, $restartWatchMethod->invoke($this->testInstance, true));
 
-        $reflectionRestartWatchMethod->setAccessible(false);
+        $restartWatchMethod->setAccessible(false);
 
     }
 
     public function testShutDownCallback()
     {
-        $reflectionRestartWatchMethod = new \ReflectionMethod($this->testInstance, 'shutDownCallback');
+        $shutDownMethod = new \ReflectionMethod($this->testInstance, 'shutDownCallback');
 
-        $reflectionRestartWatchMethod->setAccessible(true);
+        $shutDownMethod->setAccessible(true);
 
         /**
          * @var callable $shutDownCallback
          */
-        $shutDownCallback = $reflectionRestartWatchMethod->invoke($this->testInstance);
+        $shutDownCallback = $shutDownMethod->invoke($this->testInstance);
 
         $shutDownCallback();
 
-        $reflectionRestartWatchMethod->setAccessible(false);
+        $shutDownMethod->setAccessible(false);
 
     }
 }
