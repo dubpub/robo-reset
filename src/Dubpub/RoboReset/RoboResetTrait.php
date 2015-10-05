@@ -51,7 +51,7 @@ trait RoboResetTrait
     protected function resetRobo($message = null)
     {
 
-        //$this->_exec('clear');
+        $this->taskExec('clear')->run();
 
         if (null !== $message) {
             $this->say('Restarting. Reason: '.$message);
